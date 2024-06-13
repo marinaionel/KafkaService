@@ -1,8 +1,15 @@
 ﻿using Confluent.Kafka;
 
+var kafkaUrl = Environment.GetEnvironmentVariable("KAFKA_URL");
+
+if (kafkaUrl == null)
+{
+    throw new ArgumentNullException("KAFKA_URL");
+}
+
 var configProducer = new ProducerConfig
 {
-    BootstrapServers = "localhost:9092"
+    BootstrapServers = kafkaUrl
 };
 
 using var producer = new ProducerBuilder<Null, string>(configProducer).Build();
@@ -18,7 +25,8 @@ while (true)
 
     var message = new Message<Null, string> { Value = userInput };
 
-    producer.Produce(topic, message, deliveryReport => {
+    producer.Produce(topic, message, deliveryReport =>
+    {
         if (deliveryReport.Error.IsError)
         {
             Console.WriteLine($"Error: {deliveryReport.Error.Reason}");

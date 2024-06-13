@@ -1,8 +1,15 @@
 ﻿using Confluent.Kafka;
 
+var kafkaUrl = Environment.GetEnvironmentVariable("KAFKA_URL");
+
+if (kafkaUrl == null)
+{
+    throw new ArgumentNullException("KAFKA_URL");
+}
+
 var configConsumer = new ConsumerConfig
 {
-    BootstrapServers = "localhost:9092",
+    BootstrapServers = kafkaUrl,
     GroupId = "test-group",
     AutoOffsetReset = AutoOffsetReset.Earliest
 };

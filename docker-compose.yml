@@ -1,0 +1,41 @@
+version: "3.4"
+
+services:
+  kafka:
+    image: apache/kafka:latest
+    ports:
+      - 9092:9092
+    networks:
+      - default
+
+  kafkaproducer:
+    image: kafkaproducer
+    ports:
+      - 3001:3001
+    build:
+      context: .
+      dockerfile: KafkaProducer/Dockerfile
+      args:
+        - configuration=Debug
+    depends_on:
+      - kafka
+    networks:
+      - default
+    environment:
+      - KAFKA_URL=kafka:9092
+
+  kafkaconsumer:
+    image: kafkaconsumer
+    ports:
+      - 3002:3002
+    build:
+      context: .
+      dockerfile: KafkaConsumer/Dockerfile
+      args:
+        - configuration=Debug
+    depends_on:
+      - kafka
+    networks:
+      - default
+    environment:
+      - KAFKA_URL=kafka:9092
